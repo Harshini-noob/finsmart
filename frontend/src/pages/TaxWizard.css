@@ -1,0 +1,276 @@
+.tax-container {
+  min-height: 100vh;
+  background: #f0f2f5;
+  padding: 20px;
+}
+
+.tax-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tax-header {
+  text-align: center;
+  padding: 10px 0;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tax-header h1 {
+  font-size: 26px;
+  color: #4f46e5;
+  font-weight: 800;
+}
+
+.tax-header p {
+  color: #64748b;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.tax-form-card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.tax-form-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.tax-note {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.tax-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.tax-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tax-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.tax-field input,
+.tax-field select {
+  padding: 10px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+.tax-field input:focus,
+.tax-field select:focus {
+  border-color: #4f46e5;
+}
+
+.tax-analyze-btn {
+  width: 100%;
+  padding: 14px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tax-analyze-btn:hover { background: #4338ca; }
+.tax-analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Result */
+.tax-saving-hero {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  color: white;
+}
+
+.tax-saving-label {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.tax-saving-amount {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tax-saving-sub {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+/* Regime Compare */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1e293b;
+}
+
+.card.purple { background: #eef2ff; }
+.card.purple h2 { color: #4f46e5; }
+.card ol {
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card li {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.regime-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.regime-box {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.regime-box.winner {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.regime-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.regime-tax {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.winner-badge {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* Deductions */
+.deduction-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 12px;
+}
+
+.deduction-row:last-child { border-bottom: none; }
+
+.deduction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.deduction-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.deduction-section {
+  font-size: 11px;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.deduction-desc {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.deduction-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.deduction-invest {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.deduction-save {
+  font-size: 13px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.tax-back-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: #4f46e5;
+  border: 2px solid #4f46e5;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
