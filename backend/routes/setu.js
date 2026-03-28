@@ -109,23 +109,29 @@ router.get('/transactions/:consentId', async (req, res) => {
 
 // Step 3 — Use dummy data for demo if Setu not available
 router.get('/demo-transactions', async (req, res) => {
-  const demoTransactions = [
-    { date: '2026-03-01', amount: 50000, type: 'CREDIT', description: 'SALARY HDFC BANK' },
-    { date: '2026-03-02', amount: 850,   type: 'DEBIT',  description: 'Zomato Order' },
-    { date: '2026-03-03', amount: 1200,  type: 'DEBIT',  description: 'Uber Cab' },
-    { date: '2026-03-04', amount: 3400,  type: 'DEBIT',  description: 'Amazon Shopping' },
-    { date: '2026-03-05', amount: 8000,  type: 'DEBIT',  description: 'HDFC Credit Card Bill' },
-    { date: '2026-03-06', amount: 2100,  type: 'DEBIT',  description: 'Swiggy Food' },
-    { date: '2026-03-07', amount: 1500,  type: 'DEBIT',  description: 'Netflix Hotstar' },
-    { date: '2026-03-08', amount: 5000,  type: 'DEBIT',  description: 'SBI Mutual Fund SIP' },
-    { date: '2026-03-10', amount: 900,   type: 'DEBIT',  description: 'Petrol Bunk' },
-    { date: '2026-03-12', amount: 12000, type: 'DEBIT',  description: 'House Rent' },
-    { date: '2026-03-15', amount: 3200,  type: 'DEBIT',  description: 'Grocery BigBasket' },
-    { date: '2026-03-18', amount: 600,   type: 'DEBIT',  description: 'Electricity Bill' },
-    { date: '2026-03-20', amount: 2500,  type: 'DEBIT',  description: 'Clothes Shopping' },
-    { date: '2026-03-22', amount: 1800,  type: 'DEBIT',  description: 'Medical Pharmacy' },
-    { date: '2026-03-25', amount: 700,   type: 'DEBIT',  description: 'Movie PVR' },
-  ];
+  // Make it feel like a real person's account
+const demoTransactions = [
+  { date:'2026-03-01', amount:62000, type:'CREDIT', description:'SALARY - INFOSYS LTD' },
+  { date:'2026-03-02', amount:15000, type:'DEBIT',  description:'HDFC BANK - RENT TRANSFER' },
+  { date:'2026-03-03', amount:849,   type:'DEBIT',  description:'SWIGGY ORDER #445521' },
+  { date:'2026-03-04', amount:1299,  type:'DEBIT',  description:'NETFLIX SUBSCRIPTION' },
+  { date:'2026-03-05', amount:2340,  type:'DEBIT',  description:'UBER RIDES' },
+  { date:'2026-03-07', amount:5000,  type:'DEBIT',  description:'SBI MUTUAL FUND SIP' },
+  { date:'2026-03-08', amount:3240,  type:'DEBIT',  description:'AMAZON SHOPPING' },
+  { date:'2026-03-10', amount:1200,  type:'DEBIT',  description:'BPCL PETROL PUMP' },
+  { date:'2026-03-12', amount:890,   type:'DEBIT',  description:'ZOMATO ORDER #332211' },
+  { date:'2026-03-14', amount:25000, type:'DEBIT',  description:'HDFC CREDIT CARD BILL' },
+  { date:'2026-03-15', amount:4500,  type:'DEBIT',  description:'BIGBASKET GROCERIES' },
+  { date:'2026-03-17', amount:750,   type:'DEBIT',  description:'BESCOM ELECTRICITY BILL' },
+  { date:'2026-03-18', amount:1800,  type:'DEBIT',  description:'APOLLO PHARMACY' },
+  { date:'2026-03-20', amount:3500,  type:'DEBIT',  description:'MYNTRA CLOTHING' },
+  { date:'2026-03-22', amount:500,   type:'DEBIT',  description:'PVR CINEMAS' },
+  { date:'2026-03-24', amount:2000,  type:'DEBIT',  description:'AIRTEL BROADBAND' },
+  { date:'2026-03-25', amount:1500,  type:'CREDIT', description:'FREELANCE PAYMENT - UPWORK' },
+  { date:'2026-03-27', amount:800,   type:'DEBIT',  description:'CULT FIT MEMBERSHIP' },
+  { date:'2026-03-28', amount:12000, type:'DEBIT',  description:'LIC PREMIUM PAYMENT' },
+  { date:'2026-03-30', amount:5000,  type:'DEBIT',  description:'PPF CONTRIBUTION' },
+];
 
   res.json({ success: true, transactions: demoTransactions });
 });

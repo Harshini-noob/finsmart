@@ -89,6 +89,10 @@ const Transactions = ({ onTransactionsLoaded }) => {
 
   return (
     <div className="txn-container">
+      <div className="demo-banner">
+  🔬 <strong>Prototype Mode</strong> — Using Setu sandbox data. 
+  In production, connects to your real bank via RBI Account Aggregator.
+</div>
 
       {step === 'connect' && (
         <div className="connect-card">
