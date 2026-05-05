@@ -9,7 +9,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://finsmart-d2tezv8wr-harshinis-projects-e060d193.vercel.app',
+    'https://finsmart-ashy.vercel.app',
     /\.vercel\.app$/
   ],
   credentials: true
