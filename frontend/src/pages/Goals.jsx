@@ -18,9 +18,10 @@ const Goals = ({ token, onBack }) => {
     category: 'other'
   });
 
-  useEffect(() => {
-    fetchGoals();
-  }, []);
+  // eslint-disable-next-line
+useEffect(() => {
+  fetchGoals();
+}, []);
 
   const fetchGoals = async () => {
     try {

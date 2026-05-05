@@ -19,7 +19,7 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(false);
+ 
 
   // On refresh → always go to landing
   // No auto-login from storage

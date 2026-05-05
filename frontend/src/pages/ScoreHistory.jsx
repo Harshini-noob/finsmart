@@ -8,9 +8,10 @@ const ScoreHistory = ({ token, onBack }) => {
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
+// eslint-disable-next-line
+useEffect(() => {
+  fetchHistory();
+}, []);
 
   const fetchHistory = async () => {
     try {
