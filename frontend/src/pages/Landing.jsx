@@ -136,7 +136,7 @@ const Landing = ({ onStart,onLogin }) => {
       {/* Footer */}
       <div className="landing-footer">
         <p>💰 FinSmart — AI Financial Advisor for India</p>
-        <p>Built with ❤️ by Team Binary Brains · IIIT Kottayam</p>
+        <p>Built with ❤️ by Harshini · IIIT Kottayam</p>
       </div>
 
     </div>
