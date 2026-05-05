@@ -1,16 +1,21 @@
 import './Landing.css';
 
-const Landing = ({ onStart }) => {
+const Landing = ({ onStart,onLogin }) => {
   return (
     <div className="landing">
 
       {/* Nav */}
-      <nav className="landing-nav">
-        <h1 className="nav-logo">💰 FinSmart</h1>
-        <button className="nav-btn" onClick={onStart}>
-          Get Started Free →
-        </button>
-      </nav>
+<nav className="landing-nav">
+  <h1 className="nav-logo">💰 FinSmart</h1>
+  <div className="nav-btns">
+    <button className="nav-login-btn" onClick={onLogin}>
+      Login
+    </button>
+    <button className="nav-btn" onClick={onStart}>
+      Get Started Free →
+    </button>
+  </div>
+</nav>
 
       {/* Hero */}
       <div className="hero">

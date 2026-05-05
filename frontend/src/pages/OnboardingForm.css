@@ -101,3 +101,29 @@
   color: #9ca3af;
   margin-top: 12px;
 }
+
+.user-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eef2ff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.small-logout {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.small-logout:hover {
+  text-decoration: underline;
+}

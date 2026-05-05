@@ -1,20 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './OnboardingForm.css';
 
-const OnboardingForm = ({ onSubmit }) => {
+const OnboardingForm = ({ onSubmit, user, onLogout }) => {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    name: '', age: '', income: '',
-    expenses: '', savings: '',
-    goal: 'retirement', risk: 'medium'
+    name: '',
+    age: '',
+    income: '',
+    expenses: '',
+    savings: '',
+    goal: 'retirement',
+    risk: 'medium'
   });
+
+  // Auto-fill from saved profile
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name:     user.name     || '',
+        age:      user.age      || '',
+        income:   user.income   || '',
+        expenses: user.expenses || '',
+        savings:  user.savings  || '',
+        goal:     user.goal     || 'retirement',
+        risk:     user.risk     || 'medium'
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.age || 
+    if (!formData.name || !formData.age ||
         !formData.income || !formData.expenses) {
       setError('Please fill all fields');
       return;
@@ -26,10 +46,25 @@ const OnboardingForm = ({ onSubmit }) => {
     <div className="form-container">
       <div className="form-card">
 
+        {/* Header */}
         <div className="form-header">
           <h1>💰 FinSmart</h1>
-          <p>Your free AI-powered financial advisor</p>
+          {user ? (
+            <p>Welcome back, <strong>{user.name}</strong>! 👋</p>
+          ) : (
+            <p>Your free AI-powered financial advisor</p>
+          )}
         </div>
+
+        {/* User info bar if logged in */}
+        {user && (
+          <div className="user-bar">
+            <span>👤 {user.email}</span>
+            <button className="small-logout" onClick={onLogout}>
+              Logout
+            </button>
+          </div>
+        )}
 
         <div className="form-fields">
 
@@ -89,7 +124,11 @@ const OnboardingForm = ({ onSubmit }) => {
 
           <div className="field">
             <label>Main Financial Goal</label>
-            <select name="goal" value={formData.goal} onChange={handleChange}>
+            <select
+              name="goal"
+              value={formData.goal}
+              onChange={handleChange}
+            >
               <option value="retirement">Retire Early (FIRE)</option>
               <option value="house">Buy a House</option>
               <option value="education">Child's Education</option>
@@ -100,7 +139,11 @@ const OnboardingForm = ({ onSubmit }) => {
 
           <div className="field">
             <label>Risk Appetite</label>
-            <select name="risk" value={formData.risk} onChange={handleChange}>
+            <select
+              name="risk"
+              value={formData.risk}
+              onChange={handleChange}
+            >
               <option value="low">Low — I prefer safety</option>
               <option value="medium">Medium — Balanced approach</option>
               <option value="high">High — I want maximum growth</option>
@@ -115,11 +158,14 @@ const OnboardingForm = ({ onSubmit }) => {
           className="submit-btn"
           onClick={handleSubmit}
         >
-          ✨ Get My Financial Report
+          {user?.income
+            ? '🔄 Re-analyze My Finances'
+            : '✨ Get My Financial Report'
+          }
         </button>
 
         <p className="privacy-note">
-          🔒 Your data is private and never stored
+          🔒 Your data is private and never stored without consent
         </p>
 
       </div>

@@ -2,53 +2,34 @@ import { useState } from 'react';
 import axios from 'axios';
 import './Dashboard.css';
 import TaxWizard from './TaxWizard';
+import Goals from './Goals';
+import ScoreHistory from './ScoreHistory';
+import API from '../config';
 
-const Dashboard = ({ userData, analysis }) => {
+const Dashboard = ({ userData, analysis, user, token, onLogout, onRestart }) => {
+
+  const [showTax, setShowTax] = useState(false);
+  const [showGoals, setShowGoals] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [chatMessages, setChatMessages] = useState([
     {
       role: 'ai',
-      text: `Hi ${userData.name}! 👋 I've analyzed your finances. Your Money Health Score is ${analysis.score}/100. Ask me anything about your money!`
+      text: `Hi ${userData.name}! 👋 Your Money Health Score is ${analysis.score}/100. Ask me anything!`
     }
   ]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const [simInput, setSimInput] = useState('');
-const [simResult, setSimResult] = useState(null);
-const [simLoading, setSimLoading] = useState(false);
-const [showTax, setShowTax] = useState(false);
+  const [simResult, setSimResult] = useState(null);
+  const [simLoading, setSimLoading] = useState(false);
+  const [language, setLanguage] = useState('english');
 
-  const sendMessage = async () => {
-    if (!chatInput.trim()) return;
-    const userMessage = chatInput;
-    setChatInput('');
-    setChatMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setChatLoading(true);
-    try {
-      const response = await axios.post(
-        'http://localhost:5000/api/chat',
-        {
-          userProfile: { ...userData, score: analysis.score },
-          message: userMessage
-        }
-      );
-      setChatMessages(prev => [
-        ...prev,
-        { role: 'ai', text: response.data.reply }
-      ]);
-    } catch (err) {
-      setChatMessages(prev => [
-        ...prev,
-        { role: 'ai', text: 'Sorry, something went wrong. Try again!' }
-      ]);
-    } finally {
-      setChatLoading(false);
-    }
-  };
+  // ── Show other pages ──
+  if (showTax) return <TaxWizard userData={userData} onBack={() => setShowTax(false)} />;
+  if (showGoals) return <Goals token={token} onBack={() => setShowGoals(false)} />;
+  if (showHistory) return <ScoreHistory token={token} onBack={() => setShowHistory(false)} />;
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') sendMessage();
-  };
-
+  // ── Score colors ──
   const getScoreColor = (score) => {
     if (score >= 80) return '#16a34a';
     if (score >= 60) return '#2563eb';
@@ -62,59 +43,120 @@ const [showTax, setShowTax] = useState(false);
     if (score >= 40) return '#fffbeb';
     return '#fef2f2';
   };
-  if (showTax) {
-  return (
-    <TaxWizard
-      userData={userData}
-      onBack={() => setShowTax(false)}
-    />
-  );
-}
 
   const color = getScoreColor(analysis.score);
-  const bg = getScoreBg(analysis.score);
+  const bg    = getScoreBg(analysis.score);
 
-  const runSimulation = async () => {
-  if (!simInput.trim()) return;
-  setSimLoading(true);
-  setSimResult(null);
+
+ 
+
+  // ── Chat ──
+const sendMessage = async () => {
+  if (!chatInput.trim()) return;
+  const userMessage = chatInput;
+  setChatInput('');
+  setChatMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+  setChatLoading(true);
   try {
-    const response = await axios.post(
-      'http://localhost:5000/api/simulate',
-      {
-        userProfile: { ...userData, score: analysis.score },
-        scenario: simInput
-      }
-    );
-    setSimResult(response.data.result);
-  } catch (err) {
-    setSimResult({
-      newScore: analysis.score,
-      impact: 'Could not simulate. Try again.',
-      actions: []
+    const response = await axios.post(`${API}/api/chat`, {
+      userProfile: {
+        ...userData,
+        score: analysis.score,
+        language  // ← this must be here
+      },
+      message: userMessage
     });
+    setChatMessages(prev => [
+      ...prev,
+      { role: 'ai', text: response.data.reply }
+    ]);
+  } catch (err) {
+    setChatMessages(prev => [
+      ...prev,
+      { role: 'ai', text: 'Sorry, something went wrong!' }
+    ]);
   } finally {
-    setSimLoading(false);
+    setChatLoading(false);
   }
 };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') sendMessage();
+  };
+
+  // ── Simulator ──
+  const runSimulation = async () => {
+    if (!simInput.trim()) return;
+    setSimLoading(true);
+    setSimResult(null);
+    try {
+      const response = await axios.post(`${API}/api/simulate`, {
+        userProfile: { ...userData, score: analysis.score },
+        scenario: simInput
+      });
+      setSimResult(response.data.result);
+    } catch (err) {
+      setSimResult({
+        newScore: analysis.score,
+        impact: 'Could not simulate. Try again.',
+        actions: []
+      });
+    } finally {
+      setSimLoading(false);
+    }
+  };
 
   return (
     <div className="dashboard">
       <div className="dashboard-inner">
 
-        {/* Header */}
-<div className="dash-header">
-  <h1>💰 FinSmart</h1>
-  <p>Financial Report for <strong>{userData.name}</strong></p>
-  <button
-    className="tax-wizard-btn"
-    onClick={() => setShowTax(true)}
-  >
-    💸 Open Tax Wizard
-  </button>
-</div>
+        {/* ── HEADER ── */}
+        <div className="dash-header">
+          <h1>💰 FinSmart</h1>
+          <p>Financial Report for <strong>{userData.name}</strong></p>
 
-        {/* Score */}
+          {/* Language Toggle */}
+          <div className="lang-toggle">
+            {['english', 'hindi', 'tamil'].map(lang => (
+              <button
+                key={lang}
+                className={`lang-btn ${language === lang ? 'active' : ''}`}
+                onClick={() => setLanguage(lang)}
+              >
+                {lang === 'english' ? '🇬🇧 EN' :
+                 lang === 'hindi'   ? '🇮🇳 HI' : '🇮🇳 TA'}
+              </button>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="dash-header-btns">
+            <button className="tax-wizard-btn" onClick={() => setShowTax(true)}>
+              💸 Tax Wizard
+            </button>
+            {user?.id && (
+              <button className="goals-btn" onClick={() => setShowGoals(true)}>
+                🎯 My Goals
+              </button>
+            )}
+            {user?.id && (
+              <button className="history-btn" onClick={() => setShowHistory(true)}>
+                📈 Score History
+              </button>
+            )}
+            
+            <button className="restart-btn" onClick={onRestart}>
+              🔄 New Analysis
+            </button>
+            {user?.id && (
+              <button className="logout-btn" onClick={onLogout}>
+                Logout
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ── SCORE ── */}
         <div className="score-card" style={{ background: bg, borderColor: color }}>
           <p className="score-label">Money Health Score</p>
           <p className="score-number" style={{ color }}>{analysis.score}</p>
@@ -122,13 +164,13 @@ const [showTax, setShowTax] = useState(false);
           <p className="score-reason">{analysis.scoreReason}</p>
         </div>
 
-        {/* Summary */}
+        {/* ── SUMMARY ── */}
         <div className="card">
           <h2>📋 Summary</h2>
           <p>{analysis.summary}</p>
         </div>
 
-        {/* Strengths + Gaps */}
+        {/* ── STRENGTHS + GAPS ── */}
         <div className="two-col">
           <div className="card green">
             <h2>✅ Strengths</h2>
@@ -148,7 +190,7 @@ const [showTax, setShowTax] = useState(false);
           </div>
         </div>
 
-        {/* Action Plan */}
+        {/* ── ACTION PLAN ── */}
         <div className="card purple">
           <h2>🎯 Action Plan</h2>
           <ol>
@@ -158,21 +200,17 @@ const [showTax, setShowTax] = useState(false);
           </ol>
         </div>
 
-        {/* SIP */}
+        {/* ── SIP ── */}
         <div className="card">
           <h2>📈 SIP Recommendation</h2>
           <p className="big-number">
             ₹{analysis.sipRecommendation.amount.toLocaleString('en-IN')}/month
           </p>
-          <p className="sub-text">
-            Fund: {analysis.sipRecommendation.fund}
-          </p>
-          <p className="sub-text">
-            {analysis.sipRecommendation.reason}
-          </p>
+          <p className="sub-text">Fund: {analysis.sipRecommendation.fund}</p>
+          <p className="sub-text">{analysis.sipRecommendation.reason}</p>
         </div>
 
-        {/* Tax Savings */}
+        {/* ── TAX SAVINGS ── */}
         <div className="card">
           <h2>💸 Tax Savings You're Missing</h2>
           {analysis.taxSavings.map((tax, i) => (
@@ -190,7 +228,7 @@ const [showTax, setShowTax] = useState(false);
           ))}
         </div>
 
-        {/* Emergency Fund */}
+        {/* ── EMERGENCY FUND ── */}
         <div className="card">
           <h2>🛡️ Emergency Fund</h2>
           <div className="three-col">
@@ -215,101 +253,95 @@ const [showTax, setShowTax] = useState(false);
           </div>
           {analysis.emergencyFund.gap > 0 && (
             <p className="gap-note">
-              You'll close this gap in{' '}
+              Close this gap in{' '}
               <strong>{analysis.emergencyFund.monthsToClose} months</strong>{' '}
               at your current savings rate
             </p>
           )}
         </div>
 
-        {/* Chat */}
+        {/* ── WHAT IF SIMULATOR ── */}
+        <div className="card sim-card">
+          <h2>🔮 What If Simulator</h2>
+          <p className="sim-subtitle">Test financial decisions before making them</p>
+
+          <div className="sim-scenarios">
+            {[
+              'I start a SIP of ₹5,000/month',
+              'I take a home loan of ₹40 lakhs',
+              'I get a ₹1 lakh bonus',
+              'I lose my job for 3 months',
+              'I increase SIP to ₹10,000/month',
+            ].map((s, i) => (
+              <button
+                key={i}
+                className="scenario-btn"
+                onClick={() => setSimInput(`What if ${s}?`)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
+          <div className="sim-input-row">
+            <input
+              className="sim-input"
+              placeholder="What if I start investing ₹3,000/month?"
+              value={simInput}
+              onChange={e => setSimInput(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && runSimulation()}
+            />
+            <button
+              className="sim-btn"
+              onClick={runSimulation}
+              disabled={simLoading}
+            >
+              {simLoading ? '⏳' : 'Simulate'}
+            </button>
+          </div>
+
+          {simResult && (
+            <div className="sim-result">
+              <div className="sim-scores">
+                <div className="sim-score-box">
+                  <p className="sim-score-label">Current Score</p>
+                  <p className="sim-score-num"
+                     style={{ color: getScoreColor(analysis.score) }}>
+                    {analysis.score}
+                  </p>
+                </div>
+                <div className="sim-arrow">→</div>
+                <div className="sim-score-box">
+                  <p className="sim-score-label">New Score</p>
+                  <p className="sim-score-num"
+                     style={{ color: getScoreColor(simResult.newScore) }}>
+                    {simResult.newScore}
+                  </p>
+                </div>
+                <div className={`sim-diff ${simResult.newScore >= analysis.score ? 'positive' : 'negative'}`}>
+                  {simResult.newScore >= analysis.score ? '▲' : '▼'}{' '}
+                  {Math.abs(simResult.newScore - analysis.score)} points
+                </div>
+              </div>
+              <p className="sim-impact">{simResult.impact}</p>
+              {simResult.actions?.length > 0 && (
+                <ul className="sim-actions">
+                  {simResult.actions.map((a, i) => (
+                    <li key={i}>{a}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── CHAT ── */}
         <div className="card chat-card">
           <h2>💬 Ask Your AI Financial Advisor</h2>
           <p className="chat-subtitle">
-            Ask anything about your finances — in plain English
+            Ask anything in plain English
+            {language !== 'english' && ` · Replies in ${language}`}
           </p>
-
-          {/* What If Simulator */}
-<div className="card sim-card">
-  <h2>🔮 What If Simulator</h2>
-  <p className="sim-subtitle">
-    Test any financial decision before making it
-  </p>
-
-  {/* Quick Scenarios */}
-  <div className="sim-scenarios">
-    {[
-      'I start a SIP of ₹5,000/month',
-      'I take a home loan of ₹40 lakhs',
-      'I get a ₹1 lakh bonus',
-      'I lose my job for 3 months',
-      'I increase SIP to ₹10,000/month',
-    ].map((s, i) => (
-      <button
-        key={i}
-        className="scenario-btn"
-        onClick={() => setSimInput(`What if ${s}?`)}
-      >
-        {s}
-      </button>
-    ))}
-  </div>
-
-  {/* Custom Input */}
-  <div className="sim-input-row">
-    <input
-      className="sim-input"
-      placeholder="What if I start investing ₹3,000/month?"
-      value={simInput}
-      onChange={e => setSimInput(e.target.value)}
-      onKeyPress={e => e.key === 'Enter' && runSimulation()}
-    />
-    <button
-      className="sim-btn"
-      onClick={runSimulation}
-      disabled={simLoading}
-    >
-      {simLoading ? '⏳' : 'Simulate'}
-    </button>
-  </div>
-
-  {/* Result */}
-  {simResult && (
-    <div className="sim-result">
-      <div className="sim-scores">
-        <div className="sim-score-box old">
-          <p className="sim-score-label">Current Score</p>
-          <p className="sim-score-num"
-             style={{ color: getScoreColor(analysis.score) }}>
-            {analysis.score}
-          </p>
-        </div>
-        <div className="sim-arrow">→</div>
-        <div className="sim-score-box new">
-          <p className="sim-score-label">New Score</p>
-          <p className="sim-score-num"
-             style={{ color: getScoreColor(simResult.newScore) }}>
-            {simResult.newScore}
-          </p>
-        </div>
-        <div className={`sim-diff ${simResult.newScore >= analysis.score ? 'positive' : 'negative'}`}>
-          {simResult.newScore >= analysis.score ? '▲' : '▼'}{' '}
-          {Math.abs(simResult.newScore - analysis.score)} points
-        </div>
-      </div>
-
-      <p className="sim-impact">{simResult.impact}</p>
-
-      {simResult.actions && simResult.actions.length > 0 && (
-        <ul className="sim-actions">
-          {simResult.actions.map((a, i) => (
-            <li key={i}>{a}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )}
-</div>
 
           <div className="chat-messages">
             {chatMessages.map((msg, i) => (

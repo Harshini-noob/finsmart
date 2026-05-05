@@ -1,10 +1,16 @@
 const analyzePrompt = (user) => `
+${user.language === 'tamil' 
+  ? 'You must respond ONLY in Tamil language. All text including scoreLabel, scoreReason, strengths, gaps, actionPlan, summary must be in Tamil.' 
+  : user.language === 'hindi' 
+  ? 'You must respond ONLY in Hindi language. All text including scoreLabel, scoreReason, strengths, gaps, actionPlan, summary must be in Hindi.'
+  : 'Respond in English.'}
+
 You are a strict Indian Chartered Accountant analyzing finances.
 Be PRECISE with scoring. Different profiles MUST get different scores.
 
 Use this exact scoring rubric:
 - Savings rate > 30% of income → +20 points
-- Savings rate 20-30% → +12 points  
+- Savings rate 20-30% → +12 points
 - Savings rate 10-20% → +6 points
 - Savings rate < 10% → +0 points
 
@@ -25,7 +31,6 @@ Use this exact scoring rubric:
 - High debt → +0 points
 
 - Tax efficient → +15 points
-- Partially efficient → +8 points
 - Not tax efficient → +0 points
 
 User Profile:
@@ -40,99 +45,56 @@ User Profile:
 - Risk Appetite: ${user.risk}
 - Transaction Summary: ${user.transactions || 'Not provided'}
 
-Calculate the EXACT score using the rubric above.
-A 24-year-old with no investments CANNOT score the same as 
-a 35-year-old with active SIPs and insurance.
-
-Respond ONLY in this exact JSON — no extra text:
+Respond ONLY in this exact JSON — no extra text outside JSON:
 {
-  "score": <calculated score 0-100>,
-  "scoreLabel": <"Poor" if score<40, "Fair" if 40-60, "Good" if 61-80, "Excellent" if >80>,
-  "scoreReason": "<specific one sentence with actual numbers from their profile>",
+  "score": <number 0-100>,
+  "scoreLabel": <"Poor"/"Fair"/"Good"/"Excellent">,
+  "scoreReason": "<specific one sentence with actual numbers>",
   "strengths": [
-    "<specific strength with their actual rupee amount>",
-    "<specific strength with their actual rupee amount>"
+    "<specific strength with rupee amount>",
+    "<specific strength with rupee amount>"
   ],
   "gaps": [
-    "<specific gap with exact rupee amount needed to fix>",
-    "<specific gap with exact rupee amount needed to fix>",
-    "<specific gap with exact rupee amount needed to fix>"
+    "<specific gap with exact rupee amount>",
+    "<specific gap with exact rupee amount>",
+    "<specific gap with exact rupee amount>"
   ],
   "sipRecommendation": {
-    "amount": <monthly SIP in rupees based on their surplus>,
+    "amount": <monthly SIP in rupees>,
     "fund": "<specific Indian fund name>",
-    "reason": "<one line why this specific fund for their risk profile>"
+    "reason": "<one line why this fund>"
   },
   "emergencyFund": {
-    "required": <6 months of their expenses>,
-    "current": <their current savings>,
-    "gap": <required minus current, minimum 0>,
+    "required": <6 months of expenses>,
+    "current": <current savings>,
+    "gap": <required minus current>,
     "monthsToClose": <gap divided by monthly surplus>
   },
   "taxSavings": [
     {
       "instrument": "<PPF/ELSS/NPS/Health Insurance>",
       "amount": <amount to invest>,
-      "taxSaved": <exact tax saved based on their income slab>
+      "taxSaved": <tax saved in rupees>
     }
   ],
   "actionPlan": [
-    "<specific action THIS WEEK with exact rupee amount>",
-    "<specific action THIS MONTH with exact rupee amount>",
-    "<specific action THIS YEAR with exact rupee amount>"
+    "<specific action THIS WEEK with rupee amount>",
+    "<specific action THIS MONTH with rupee amount>",
+    "<specific action THIS YEAR with rupee amount>"
   ],
-  "summary": "<2 sentences using their actual name and specific numbers>"
-}
-
-User Profile:
-- Name: ${user.name}
-- Age: ${user.age}
-- Monthly Income: Rs.${user.income}
-- Monthly Expenses: Rs.${user.expenses}
-- Current Savings: Rs.${user.savings}
-- Goal: ${user.goal}
-- Risk Appetite: ${user.risk}
-- Transaction Summary: ${user.transactions || 'Not connected yet'}
-
-Respond ONLY in this exact JSON format, no extra text:
-{
-  "score": <number 0-100>,
-  "scoreLabel": <"Poor" or "Fair" or "Good" or "Excellent">,
-  "scoreReason": "<one sentence why this score>",
-  "strengths": [
-    "<specific strength with rupee amount>",
-    "<specific strength with rupee amount>"
-  ],
-  "gaps": [
-    "<specific gap with rupee amount needed to fix>",
-    "<specific gap with rupee amount needed to fix>",
-    "<specific gap with rupee amount needed to fix>"
-  ],
-  "sipRecommendation": {
-    "amount": <monthly SIP in rupees>,
-    "fund": "<specific fund name e.g. Nifty 50 Index Fund>",
-    "reason": "<one line why this fund>"
-  },
-  "emergencyFund": {
-    "required": <amount needed>,
-    "current": <current savings>,
-    "gap": <difference>,
-    "monthsToClose": <at current savings rate>
-  },
-  "taxSavings": [
-    {"instrument": "<PPF/ELSS/NPS etc>", "amount": <rupees>, "taxSaved": <rupees>}
-  ],
-  "actionPlan": [
-    "<specific action to take THIS WEEK with amount>",
-    "<specific action to take THIS MONTH with amount>",
-    "<specific action to take THIS YEAR with amount>"
-  ],
-  "summary": "<2 sentences plain English summary for a non-finance person>"
+  "summary": "<2 sentences using their actual name and numbers>"
 }`;
 
 const chatPrompt = (userProfile, message) => `
+${userProfile.language === 'tamil'
+  ? 'You MUST respond ONLY in Tamil language. Do not use English at all.'
+  : userProfile.language === 'hindi'
+  ? 'You MUST respond ONLY in Hindi language. Do not use English at all.'
+  : 'Respond in English.'}
+
 You are a friendly Indian financial advisor named Finny.
-You already know this user's financial profile:
+You already know this user's profile:
+- Name: ${userProfile.name}
 - Age: ${userProfile.age}
 - Monthly Income: Rs.${userProfile.income}
 - Monthly Expenses: Rs.${userProfile.expenses}
@@ -142,8 +104,8 @@ You already know this user's financial profile:
 - Money Health Score: ${userProfile.score}/100
 
 Answer their question with specific advice for THEIR situation.
-Use Indian financial context. Give rupee amounts. Keep it friendly and simple.
-Max 150 words. No jargon.
+Use Indian financial context. Give rupee amounts.
+Keep it friendly and simple. Max 150 words.
 
 User question: ${message}`;
 

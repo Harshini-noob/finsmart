@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import './TaxWizard.css';
+import API from '../config';
 
 const TaxWizard = ({ userData, onBack }) => {
   const [loading, setLoading] = useState(false);
@@ -27,8 +28,7 @@ const TaxWizard = ({ userData, onBack }) => {
     }
     setLoading(true);
     try {
-      const response = await axios.post(
-        'http://localhost:5000/api/tax',
+      const response = await axios.post(`${API}/api/auth/login`, formData,
         { ...formData, ...userData }
       );
       setResult(response.data.result);
