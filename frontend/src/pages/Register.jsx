@@ -19,27 +19,31 @@ const handleSubmit = async () => {
     setError('Please fill all fields');
     return;
   }
+
   if (formData.password !== formData.confirmPassword) {
     setError('Passwords do not match');
     return;
   }
+
   if (formData.password.length < 6) {
     setError('Password must be at least 6 characters');
     return;
   }
+
   setLoading(true);
   setError('');
+
   try {
-    const res = await axios.post(`${API}/api/auth/login`, formData,
-      {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password
-      }
-    );
-    // Pass both user AND token to App
+    const res = await axios.post(`${API}/api/auth/register`, {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password
+    });
+
     onLogin(res.data.user, res.data.token);
+
   } catch (err) {
+    console.error(err);
     setError(err.response?.data?.error || 'Registration failed');
   } finally {
     setLoading(false);
