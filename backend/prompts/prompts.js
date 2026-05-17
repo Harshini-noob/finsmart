@@ -1,3 +1,16 @@
+/**
+ * FinSmart Prompt Engine
+ * 
+ * These prompts are the core AI logic of FinSmart.
+ * They instruct the LLM to act as an Indian financial advisor
+ * and return structured JSON that the frontend can render.
+ * 
+ * Key design decisions:
+ * 1. Explicit scoring rubric → consistent, explainable scores
+ * 2. JSON output format → reliable parsing, no hallucinations
+ * 3. Indian financial context → SIP, PPF, ELSS, 80C etc.
+ * 4. Language parameter → English, Hindi, Tamil support
+ */
 const analyzePrompt = (user) => `
 ${user.language === 'tamil' 
   ? 'You must respond ONLY in Tamil language. All text including scoreLabel, scoreReason, strengths, gaps, actionPlan, summary must be in Tamil.' 
